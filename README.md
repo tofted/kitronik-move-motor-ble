@@ -6,7 +6,6 @@
 | `pxt-kitronik-move-motor-ble/` | Fork of `pxt-kitronik-move-motor` v0.4.20, depends on the fork above, adds `driveMotors(left, right)` |
 | `example/` | Joystick-drive program (`main.ts`), project `pxt.json`, and a pre-compiled `.hex` |
 | `docs/TECHNICAL-NOTES.md` | Investigation: why the conflict happens, interrupt masking vs Bluetooth, alternatives |
-| `scripts/prepare-for-github.ps1` | Fills in your GitHub username |
 
 ## Status - read this first
 
@@ -26,27 +25,21 @@ Copy `example/move-buggy-my-controller.hex` onto the micro:bit's `MICROBIT` driv
 
 ## Using the extensions in MakeCode (GitHub route)
 
-MakeCode can only import extensions from GitHub, so the two folders need to become two repositories.
+MakeCode imports one extension per repo (or branch), so each extension lives on its own branch of this repo:
 
-1. In PowerShell: `.\scripts\prepare-for-github.ps1 -User <your-github-name>`
-2. On github.com create two **empty public** repos named exactly `pxt-kitronik-ws2811-ble` and `pxt-kitronik-move-motor-ble`.
-3. Push each folder (WS2811 first) and tag the version MakeCode will pin to:
-   ```bash
-   cd pxt-kitronik-ws2811-ble
-   git init -b master && git add . && git commit -m "Bluetooth-compatible WS2811 fork"
-   git remote add origin https://github.com/<you>/pxt-kitronik-ws2811-ble.git
-   git push -u origin master && git tag v0.0.3 && git push origin v0.0.3
+| Branch | Contents |
+|---|---|
+| `move-motor-ble` | the MOVE Motor extension (the one you add) |
+| `ws2811-ble` | the WS2811 fork, pulled in automatically by the motor branch |
+| `example` | `main.ts`, `pxt.json` and the compiled `.hex` |
 
-   cd ../pxt-kitronik-move-motor-ble
-   git init -b master && git add . && git commit -m "Bluetooth-compatible MOVE Motor fork"
-   git remote add origin https://github.com/<you>/pxt-kitronik-move-motor-ble.git
-   git push -u origin master && git tag v0.4.21 && git push origin v0.4.21
-   ```
-   (Or upload through the GitHub web UI and use *Releases > Create new release* with tags `v0.0.3` / `v0.4.21`.)
-4. Open https://makecode.microbit.org and start a **New Project**. A project that already contains the original Kitronik MOVE Motor or WS2811 extension will conflict (same namespaces) - use a fresh project.
-5. **Extensions**: paste `https://github.com/aorczyk/my-controller` and import. Then paste `https://github.com/<you>/pxt-kitronik-move-motor-ble` and import. The WS2811 fork is pulled in automatically.
-6. Switch to **JavaScript**, replace the code with `example/main.ts`, download the `.hex` to the micro:bit.
-7. If the app cannot connect, check MakeCode's *Project Settings* for the Bluetooth pairing mode (My Controller's README does not specify one).
+1. Open https://makecode.microbit.org and start a **New Project** (a project that already has the original Kitronik MOVE Motor or WS2811 extension will conflict).
+2. **Extensions**: paste `https://github.com/aorczyk/my-controller` and import.
+3. **Extensions** again: paste `https://github.com/tofted/kitronik-move-motor-ble#move-motor-ble` and import.
+4. Switch to **JavaScript**, paste in `main.ts` from the `example` branch, download the `.hex` to the micro:bit.
+5. If the app cannot connect, check MakeCode's *Project Settings* for the Bluetooth pairing mode.
+
+The `pxt-kitronik-*` folders on `main` are just the source for those branches.
 
 ## The example
 
